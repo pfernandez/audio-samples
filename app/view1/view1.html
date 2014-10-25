@@ -1,24 +1,12 @@
 <div ng-controller="FetchController">
-  <label>Search by </label>
-  <select ng-model="queryType">
-    <option>text</option>
-    <option>content</option>
-    <option>combined</option>
-  </select>
-  <input type="text" ng-model="query" size="80"/>
-  <button id="fetchbtn" ng-click="updateModel()">Search</button>
+  <input type="text" ng-model="query" size="30"/>
+  <button ng-click="searchText()">Search</button>
   <h2 ng-if="data.count">Total results found: {{data.count}}</h2>
-  <ol class="list-group">
-    <li class="list-group-item" ng-repeat="item in data.results">
-      {{item}}
+  <ol>
+    <li ng-repeat="item in data.results track by $index">
+      <pre>{{item | json}}</pre>
     </li>
   </ol>
-  <button ng-if="data.previous" 
-    ng-click="updateModel(data.previous);">Previous</button>
-  <button ng-if="data.next" 
-    ng-click="updateModel(data.next)">Next</button>
-  <pre ng-if="jsonString">
-  http status code: {{status}}
-  http response data: {{jsonString}}
-  </pre>
+  <button ng-if="data.previous" ng-click="fetch(data.previous)">Previous</button>
+  <button ng-if="data.next" ng-click="fetch(data.next)">Next</button>
 </div>
