@@ -1,12 +1,27 @@
-<div ng-controller="FetchController">
-  <input type="text" ng-model="query" size="30"/>
-  <button ng-click="searchText()">Search</button>
-  <h2 ng-if="data.count">Total results found: {{data.count}}</h2>
-  <ol>
-    <li ng-repeat="item in data.results track by $index">
-      <pre>{{item | json}}</pre>
-    </li>
-  </ol>
-  <button ng-if="data.previous" ng-click="fetch(data.previous)">Previous</button>
-  <button ng-if="data.next" ng-click="fetch(data.next)">Next</button>
+<div ng-controller="FetchSounds">
+	<input type="text" ng-model="query" size="30" placeholder="loud"/>
+	<button ng-click="searchText()">Search</button>
+	<audio>Sorry; your browser doesn't support HTML5 audio.</audio>
+	<h2 ng-if="data.count">Total results found: {{data.count}}</h2>
+	<ol><li ng-repeat="sound in data.results track by $index">
+		<h3>{{sound.name}}</h3>
+		<audio controls preload="none">
+			<source src="{{sound.previews['preview-lq-ogg'] | trusted}}" type="audio/ogg">
+			<source src="{{sound.previews['preview-lq-mp3'] | trusted}}" type="audio/mp3"> 
+			Sorry; your browser doesn't support HTML5 audio.
+		</audio>
+        <a href="{{sound.previews['preview-hq-mp3'] | trusted}}" download="{{sound.name}}">&darr;mp3</a>
+        <a href="{{sound.previews['preview-hq-ogg'] | trusted}}" download="{{sound.name}}">&darr;ogg</a>
+		<p>Contributed by <a href="{{sound.url}}">{{sound.username}}</a></p>
+		<dl>
+			<dt>Tags:</dt>
+			<dd ng-repeat="tag in sound.tags">{{tag}}</dd>
+		</dl>
+		<!--<pre>{{item | json}}</pre>-->
+	</li></ol>
+	<nav>
+		<button ng-if="data.previous" ng-click="fetch(data.previous)">
+			Previous</button>
+		<button ng-if="data.next" ng-click="fetch(data.next)">Next</button>
+	</nav>
 </div>
