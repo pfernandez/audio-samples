@@ -23,7 +23,6 @@ function($scope, $http, $templateCache) {
 				$scope.data = response;
 				
 				// TODO: to remove name extensions: x.replace(/\.[^/.]+$/, "")
-				// TODO: Add download buttons
 			/*
 				$scope.data = _.omit(response, 'results');
 				$scope.data.results = [];
