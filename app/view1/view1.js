@@ -13,7 +13,7 @@ angular.module('myApp.view1', ['ngRoute'])
 function($scope, $http, $templateCache) {
 
 	$http.defaults.headers.common.Authorization = 
-		'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
+		'Token XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 	$scope.query = '';
 	$scope.data = {};
 
