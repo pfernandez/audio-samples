@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('myApp.version', [
-  'myApp.version.interpolate-filter',
-  'myApp.version.version-directive'
+angular.module('audio-samples.version', [
+  'audio-samples.version.interpolate-filter',
+  'audio-samples.version.version-directive'
 ])
 
 .value('version', '0.1');

@@ -1,31 +1,45 @@
-<div ng-controller="FetchSounds">
+<main ng-controller="FetchSounds">
 	<input type="text" ng-model="query" size="30" placeholder="loud"/>
 	<button ng-click="searchText()">Search</button>
 	<audio>Sorry; your browser doesn't support HTML5 audio.</audio>
 	<h2 ng-if="data.count">Total results found: {{data.count}}</h2>
-	<ol><li ng-repeat="sound in data.results track by $index">
-		<h3>{{sound.name}}</h3>
-		<audio controls preload="none">
-			<source ng-src="{{sound.previews['preview-lq-ogg'] | trusted}}" 
-				type="audio/ogg">
-			<source ng-src="{{sound.previews['preview-lq-mp3'] | trusted}}" 
-				type="audio/mp3"> 
-			Sorry; your browser doesn't support HTML5 audio.
-		</audio>
-        <a href="{{sound.previews['preview-hq-mp3'] | trusted}}" 
-        	download="{{sound.name}}">&darr;mp3</a>
+	<ul><li ng-repeat="sound in data.results track by $index">
+		<h3>{{$index+1}}. {{sound.name}}</h3>
+		<div class="player">
+			<button ng-click="play()" class="pause-play paused"
+				ng-class="{paused: sound.audio.paused}">
+				Play/Pause</button>
+			<input type="range" min="0" max="1" step="0.01" class="progress"
+				ng-model="sound.audio.progress">
+			<span class="time">{{sound.audio.currentTime | asMinutes }}</span>
+			<input type=range min=0 max=1 step=0.01 class="volume"
+				ng-class="{
+					vol1: (sound.audio.volume > 0),
+					vol2: (sound.audio.volume > 0.333),
+					vol3: (sound.audio.volume > 0.667)}"
+				ng-model="sound.audio.volume">
+		</div>
+        <a href="{{sound.previews['preview-hq-mp3'] | trusted}}"
+        	download="{{sound.name}}" class="download">
+        	<span class="arrow">&darr;</span>mp3
+        </a>
         <a href="{{sound.previews['preview-hq-ogg'] | trusted}}" 
-        	download="{{sound.name}}">&darr;ogg</a>
-		<p>Contributed by <a href="{{sound.url}}">{{sound.username}}</a></p>
+        	download="{{sound.name}}" class="download">
+        	<span class="arrow">&darr;</span>ogg
+        </a>
+		
 		<dl>
+			<dt>Contributed by:</dt>
+			<dd><a href="{{sound.url}}">{{sound.username}}</a></dd>
+			<br>
 			<dt>Tags:</dt>
 			<dd ng-repeat="tag in sound.tags">{{tag}}</dd>
 		</dl>
 		<!--<pre>{{item | json}}</pre>-->
-	</li></ol>
+	</li></ul>
 	<nav>
 		<button ng-if="data.previous" ng-click="fetch(data.previous)">
 			Previous</button>
 		<button ng-if="data.next" ng-click="fetch(data.next)">Next</button>
 	</nav>
-</div>
+</main>

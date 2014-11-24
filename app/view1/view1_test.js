@@ -1,8 +1,8 @@
 'use strict';
 
-describe('myApp.view1 module', function() {
+describe('audio-samples.view1 module', function() {
 
-  beforeEach(module('myApp.view1'));
+  beforeEach(module('audio-samples.view1'));
 
   describe('view1 controller', function(){
   

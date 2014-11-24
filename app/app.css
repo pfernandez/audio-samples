@@ -1,57 +1,73 @@
 /* Font Stack ****************************************/
 
-body, p {
-	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
+@import url(http://fonts.googleapis.com/css?family=Share+Tech+Mono);
+@import url(http://fonts.googleapis.com/css?family=Roboto);
+
+body, p, h1, h2, h3, h4, h5, h6, footer {
+	font-weight: normal;
+	color: #000;
+}
+
+body, p, h2 {
+	font-family: 'Roboto', sans-serif;
 	font-size: 14px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: 400;
 }
+
+h1, h3, h4, h5, h6, ol, footer, .arrow {
+	font-family: 'Share Tech Mono', monospace;
+}
+
 h1 {
-	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
-	font-size: 26px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: bold;
-	letter-spacing: 1px;
+	font-size: 48px;
+	text-transform: uppercase;
 }
-h2 {
-	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
+
+h2, ol {
 	font-size: 21px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: bold;
 }
+
 h3 {
-	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
-	font-size: 18px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: bold;
-}
-blockquote {
-	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
 	font-size: 21px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: 400;
 }
-pre {
-	font-family: 'Rockwell Extra Bold', 'Rockwell Bold', monospace;
-	font-size: 13px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: 400;
+
+footer {
+	font-size: 12.5px;
+}
+
+.arrow {
+	font-size: large;
+}
+
+footer, dd, .tagline {
+	color: #707070;
 }
 
 /*****************************************************/
 
+
+/* apply a natural box layout model to all elements, 
+but allowing components to change */
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
-	background: #F7FE2E;
+	background: #fff;
+}
+
+a {
+	text-decoration: none;
 }
 
 header {
-	
+	width: 620px;
+}
+
+header, .container {
+	margin: 0 auto;
 }
 
 .fig-ansi {
@@ -60,26 +76,123 @@ header {
 	white-space: pre;
 	margin: 20px;
 	width: 620px;
-	color: red;
+	color: #707070;
 	text-shadow: 5px 5px 0px rgba(0, 0, 0, 1);
-}
-
-h1 {
 	display: none;
 }
 
+
 .container {
 	width: 600px;
-	padding: 0 20px;
 }
 
-li {
-	border-bottom: 2px dashed #000;
+ul {
+	list-style-type: none;
+	padding: 0;
 }
 
 dt, dd {
 	display: inline-block;
 	margin: 5px 10px 0 0;
+}
+
+.player {
+	background: #000;
+	color: #FFF;
+	display: inline-block;
+	height: 30px;
+	position: relative;
+	width: 385px;
+	margin-right: 4px;
+}
+
+.player button,
+.player input,
+.player span {
+	position: absolute;
+}
+
+.pause-play {
+	width: 15px;
+	height: 18px;
+	border-style: solid;
+	border-width: 0 5px 0 5px;
+	border-color: #fff;
+	-webkit-transform: rotate(360deg);
+	padding: 0;
+	background: none;
+	color: transparent;
+	left: 10px;
+	top: 6px;
+}
+
+.pause-play.paused {
+	width: 0;
+	height: 0;
+	border-width: 9px 0 9px 15.6px;
+	border-color: transparent transparent transparent #ffffff;
+}
+
+.pause-play:focus {
+	outline: none;
+}
+
+.time {
+	top: 6px;
+	left: 265px;
+}
+
+.player input[type="range"] {
+	background: #707070;
+	height: 1px;
+	-webkit-appearance: none;
+	top: 14.5px;
+}
+
+.player input[type="range"]:hover {
+	-webkit-appearance: none;
+}
+
+.player input[type="range"]:focus {
+	outline: none;
+}
+
+.player input[type="range"]::-webkit-slider-thumb {
+	background: #fff;
+	-webkit-appearance: none;
+}
+
+.player input[type="range"]::-webkit-slider-thumb:hover {
+	opacity: 0.7;
+	-webkit-appearance: none;
+}
+
+.progress {
+	left: 40px;
+	width: 210px;
+}
+
+.progress::-webkit-slider-thumb {
+	width: 1px;
+	height: 19px;
+}
+
+.volume {
+	right: 10px;
+	width: 35px;
+}
+
+.volume::-webkit-slider-thumb {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+}
+
+.download {
+	position: relative;
+	bottom: 12px;
+	margin: 0 5px;
+	border-bottom: 1px solid;
 }
 
 nav {
@@ -96,8 +209,4 @@ footer {
 }
 
 @media all and (min-width: 900px) {
-    .fig-ansi {
-        width: 900px;
-        font-size: 11px;
-    }
 }
