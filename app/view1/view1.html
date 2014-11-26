@@ -1,17 +1,24 @@
 <main ng-controller="FetchSounds">
-	<input type="text" ng-model="query" size="30" placeholder="loud"/>
-	<button ng-click="searchText()">Search</button>
-	<audio>Sorry; your browser doesn't support HTML5 audio.</audio>
-	<h2 ng-if="data.count">Total results found: {{data.count}}</h2>
-	<ul><li ng-repeat="sound in data.results track by $index">
-		<h3>{{$index+1}}. {{sound.name}}</h3>
+	
+	<div class="search">
+		<input type="text" ng-model="query" size="30"/>
+		<button ng-click="searchText()">Search</button>
+	</div>
+	
+	<h2 ng-if="data.count">
+		Total results found: {{data.count | numberWithCommas}}
+	</h2>
+	
+	<ul class="song-list"><li ng-repeat="sound in data.results track by $index">
+	
+		<h3>{{data.start + $index + 1}}. {{sound.name | noExtension}}</h3>
+	
 		<div class="player">
 			<button ng-click="play()" class="pause-play paused"
-				ng-class="{paused: sound.audio.paused}">
-				Play/Pause</button>
+				ng-class="{paused: sound.audio.paused}">Play/Pause</button>
 			<input type="range" min="0" max="1" step="0.01" class="progress"
 				ng-model="sound.audio.progress">
-			<span class="time">{{sound.audio.currentTime | asMinutes }}</span>
+			<span class="time">{{sound.audio.currentTime | asMinutes}}</span>
 			<input type=range min=0 max=1 step=0.01 class="volume"
 				ng-class="{
 					vol1: (sound.audio.volume > 0),
@@ -19,6 +26,7 @@
 					vol3: (sound.audio.volume > 0.667)}"
 				ng-model="sound.audio.volume">
 		</div>
+		
         <a href="{{sound.previews['preview-hq-mp3'] | trusted}}"
         	download="{{sound.name}}" class="download">
         	<span class="arrow">&darr;</span>mp3
@@ -33,13 +41,16 @@
 			<dd><a href="{{sound.url}}">{{sound.username}}</a></dd>
 			<br>
 			<dt>Tags:</dt>
-			<dd ng-repeat="tag in sound.tags">{{tag}}</dd>
+			<dd ng-repeat="tag in sound.tags">
+				<button ng-click="searchText(tag)" class="tag">{{tag}}</button>
+			</dd>
 		</dl>
-		<!--<pre>{{item | json}}</pre>-->
+		
 	</li></ul>
 	<nav>
 		<button ng-if="data.previous" ng-click="fetch(data.previous)">
-			Previous</button>
-		<button ng-if="data.next" ng-click="fetch(data.next)">Next</button>
+			<span class="arrow">&larr;</span> Previous</button>
+		<button ng-if="data.next" ng-click="fetch(data.next)">
+			Next <span class="arrow">&rarr;</span></button>
 	</nav>
 </main>
