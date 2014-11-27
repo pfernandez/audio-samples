@@ -17,46 +17,66 @@ function($scope, $http, $templateCache, ngAudio) {
 	$scope.query = '';
 	$scope.data = {};
 	
-	$scope.fetch = function(url, updateModel) {
-		$http.get(url, {cache: $templateCache}).success(function(response) {
-			if(updateModel !== false) {
-				$scope.data = response;
+	$scope.fetch = function(url) {
+	
+		// Pause any currently playing sounds.
+		($scope.data.results || []).map(function(sound) {
+			if(isLoaded(sound)) { sound.audio.pause() }
+		});
+	
+		$http.get(url.replace('http:', 'https:'), {cache: $templateCache})
+		.success(function(response) {
+			
+			// Add a field indicating what sound # the array begins with.
+			var prevUrl = response.previous;
+			response.start = response.results.length
+				* (prevUrl ? getQueryVar(prevUrl, 'page') : 0);
+			
+			// Set default player values.
+			response.results.map(function(sound) {
+				sound.audio = {progress: 0, volume: 1};
+			});
+			
+			$scope.data = response;
 				
-				// Add a field indicating what sound # the array begins with.
-				var prevUrl = response.previous;
-				$scope.data.start = response.results.length
-					* (prevUrl ? getQueryVar(prevUrl, 'page') : 0);
-					
-				//TODO: link tags
-			}
 		}).error(function(response, status) {
 			console.log(status + " - Request failed: " + response);
 		});
 	};
 
 	$scope.searchText = function(text) {
-		text = text || $scope.query;
-		//TODO: multi-word search
-		$scope.fetch('http://www.freesound.org/apiv2/search/text/?query='
-			+ text + '&fields=name,url,previews,tags,username');
+		$scope.fetch('https://www.freesound.org/apiv2/search/text/?query='
+			+ encodeURIComponent(text || $scope.query) 
+			+ '&fields=name,url,previews,tags,username');
 	};
 	
 	$scope.play = function() {
 		var sound = this.sound;
-		if(! sound.audio) {
-			//TODO: Test for mp3/ogg browser compatibility.
-			sound.audio = ngAudio.load(
-				sound.previews['preview-hq-ogg']);
-			sound.audio.paused = true;
+		if(! isLoaded(sound)) {
+			// Test for mp3/ogg browser compatibility and load the sound.
+			var el = document.createElement('audio');
+			if(el.canPlayType) {
+				var source;
+				if(el.canPlayType('audio/ogg; codecs="vorbis"')) {
+					source = sound.previews['preview-hq-ogg'];
+				} else if(el.canPlayType('audio/mpeg')) {
+					source = sound.previews['preview-hq-mp3'];
+				}
+				if(source) {
+					sound.audio = ngAudio.load(source);
+					sound.audio.paused = true;
+				}
+			}
+			if(!sound.audio) {
+				alert("Sorry, your web browser doesn't support HTML audio"); 
+			}
 		}
 		var audio = sound.audio;
-		//TODO: Stop playing when search button is clicked
 		audio.paused ? audio.play() : audio.pause();
 	};
 	
-	$scope.paused = function() {
-		var paused = this.sound.audio.paused;
-		if(paused || paused === 'undefined') {
+	$scope.isPaused = function(sound) {
+		if( !isLoaded(sound) || sound.audio.paused ) {
 			return true;
 		} else {
 			return false;
@@ -74,6 +94,10 @@ function($scope, $http, $templateCache, ngAudio) {
 		return false;
 	}
 	
+	function isLoaded(sound) {
+		return !!(sound.audio && sound.audio.id);
+	}
+	
 }])
 
 .filter('trusted', ['$sce', function ($sce) {
@@ -88,7 +112,7 @@ function($scope, $http, $templateCache, ngAudio) {
     };
 })
 
-.filter("asMinutes", function () {
+.filter('asMinutes', function () {
     return function(time) {
     	var time = time || 0,
 			minutes = Math.floor(time / 60),  
@@ -97,7 +121,7 @@ function($scope, $http, $templateCache, ngAudio) {
     }
 })
 
-.filter("noExtension", function () {
+.filter('noExtension', function () {
     return function(name) {
         return name.replace(/\.[^/.]+$/, "");
     }
