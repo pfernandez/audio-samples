@@ -13,7 +13,7 @@ angular.module('audio-samples.view1', ['ngRoute', 'ngAudio'])
 function($scope, $http, $templateCache, ngAudio) {
 
 	$http.defaults.headers.common.Authorization = 
-		'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
+		'Token XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 	$scope.query = '';
 	$scope.data = {};
 	
