@@ -1,5 +1,7 @@
 'use strict';
 
+//TODO: URL bookmarking & back/forward navigation.
+
 angular.module('audio-samples.view1', ['ngRoute', 'ngAudio'])
 
 .config(['$routeProvider', function($routeProvider) {
@@ -13,7 +15,7 @@ angular.module('audio-samples.view1', ['ngRoute', 'ngAudio'])
 function($scope, $http, $templateCache, ngAudio) {
 
 	$http.defaults.headers.common.Authorization = 
-		'Token XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+		'Token XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 	$scope.query = '';
 	$scope.data = {};
 	
@@ -27,10 +29,12 @@ function($scope, $http, $templateCache, ngAudio) {
 		$http.get(url.replace('http:', 'https:'), {cache: $templateCache})
 		.success(function(response) {
 			
-			// Add a field indicating what sound # the array begins with.
-			var prevUrl = response.previous;
-			response.start = response.results.length
-				* (prevUrl ? getQueryVar(prevUrl, 'page') : 0);
+			// Add fields indicating the current page number and what sound
+			// number the page begins with.
+			var prevUrl = response.previous,
+				prevPage = (prevUrl ? getQueryVar(prevUrl, 'page') : 0);
+			response.start = response.results.length * prevPage + 1;
+			response.thisPage = prevPage + 1;
 			
 			// Set default player values.
 			response.results.map(function(sound) {
@@ -46,7 +50,15 @@ function($scope, $http, $templateCache, ngAudio) {
 
 	$scope.searchText = function(text) {
 		$scope.fetch('https://www.freesound.org/apiv2/search/text/?query='
-			+ encodeURIComponent(text || $scope.query) 
+			+ encodeURIComponent(text || $scope.query)
+			+ '&fields=name,url,previews,tags,username');
+	};
+	
+	$scope.goToPage = function(page) {
+		console.log('hello?');
+		$scope.fetch('https://www.freesound.org/apiv2/search/text/?query='
+			+ encodeURIComponent($scope.query) + '&page='
+			+ encodeURIComponent(page || 1)
 			+ '&fields=name,url,previews,tags,username');
 	};
 	
@@ -83,12 +95,54 @@ function($scope, $http, $templateCache, ngAudio) {
 		}
 	};
 	
+	$scope.navNumbers = function() {
+	
+		var data = $scope.data,
+			thisPage = data.thisPage,
+			nPages = Math.ceil(data.count / data.results.length),
+			nPerPage = 10,
+			pageFrac = thisPage / nPerPage,
+			roundDn = Math.floor(pageFrac) * nPerPage,
+			firstLink = (roundDn > 0 ? roundDn : 1),
+			roundUp = Math.ceil(pageFrac) * nPerPage,
+			lastLink = (roundUp == firstLink ? roundUp + nPerPage : roundUp),
+			lastLink = (nPages < lastLink ? nPages : lastLink),
+			result = '';
+			
+		for(var i=firstLink; i<lastLink; i++) {
+			if(thisPage == i) {
+				result += '<span class="current">' + i
+					 + (i != lastLink-1 ? ',</span> ' : '</span>');
+			} else {
+				result += '<button ng-click="goToPage(' + i + ')">' + i 
+					+ (i != lastLink-1 ? ',</button> ' : '</button>');
+			}
+		}
+	
+		if(!(thisPage == nPages) && lastLink < nPages) {
+			result += ' <button ng-click="goToPage(' + lastLink 
+				+ ')">...</button> <button ng-click="goToPage(' + nPages
+				+ ')">' + insertCommas(nPages) + '</button>';
+		} else if(thisPage != lastLink) {
+			result += ', <button ng-click="goToPage(' + lastLink + ')">' 
+				+ lastLink + '</button>';
+		} else {
+			result += ', ' + lastLink;
+		}
+		
+		return result;
+	};
+	
+	// Return a specified argument from a url string, 
+	// either as a number or string as appropriate.
 	function getQueryVar(url, variable) {
 		var vars = url.split("&");
 		for (var i=0; i<vars.length; i++) {
 			var pair = vars[i].split("=");
 			if(pair[0] == variable) {
-				return pair[1];
+				var x = pair[1], 
+					n = parseFloat(x);
+				return !isNaN(n) && isFinite(x) ? n : x;
 			}
 		}
 		return false;
@@ -100,29 +154,51 @@ function($scope, $http, $templateCache, ngAudio) {
 	
 }])
 
-.filter('trusted', ['$sce', function ($sce) {
+.directive('dir', function($compile, $parse) {
+    return {
+      restrict: 'E',
+      link: function(scope, element, attr) {
+        scope.$watch(attr.content, function() {
+          element.html($parse(attr.content)(scope));
+          $compile(element.contents())(scope);
+        }, true);
+      }
+    }
+  })
+
+.filter('trusted', ['$sce', function($sce) {
     return function(url) {
         return $sce.trustAsResourceUrl(url);
-    };
+    }
 }])
 
-.filter('numberWithCommas', function () {
-    return function(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    };
+.filter('renderHTML', ['$sce', function($sce) {
+	return function(html) {
+		return $sce.trustAsHtml(html);
+	}
+}])
+
+.filter('numberWithCommas', function() {
+	return function(number) {
+		return insertCommas(number);
+	}
 })
 
-.filter('asMinutes', function () {
-    return function(time) {
-    	var time = time || 0,
+.filter('asMinutes', function() {
+	return function(time) {
+		var time = time || 0,
 			minutes = Math.floor(time / 60),  
 			seconds = Math.floor(time - minutes * 60);
-        return minutes + ':' + (seconds > 9 ? seconds : '0' + seconds);
-    }
+		return minutes + ':' + (seconds > 9 ? seconds : '0' + seconds);
+	}
 })
 
-.filter('noExtension', function () {
-    return function(name) {
-        return name.replace(/\.[^/.]+$/, "");
-    }
+.filter('noExtension', function() {
+	return function(name) {
+		return name.replace(/\.[^/.]+$/, "");
+	}
 });
+
+var insertCommas = function(number) {
+	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

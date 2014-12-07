@@ -11,7 +11,7 @@
 	
 	<ul class="song-list"><li ng-repeat="sound in data.results track by $index">
 	
-		<h3>{{data.start + $index + 1}}. {{sound.name | noExtension}}</h3>
+		<h3>{{data.start + $index}}. {{sound.name | noExtension}}</h3>
 		
 		<div class="player" ng-class="{
 			vol1: (sound.audio.volume > 0),
@@ -50,9 +50,14 @@
 		
 	</li></ul>
 	<nav>
-		<button ng-if="data.previous" ng-click="fetch(data.previous)">
-			<span class="arrow">&#9666;</span> Previous</button>
-		<button ng-if="data.next" ng-click="fetch(data.next)">
-			Next <span class="arrow">&#9656;</span></button>
+		<div class="inner">
+			<button ng-if="data.previous" class="previous"
+				ng-click="fetch(data.previous)">
+				<span class="arrow">&#9666;</span> Previous</button>
+			<dir ng-if="data.count" class="nav-numbers" 
+				content="navNumbers()"></dir>
+			<button ng-if="data.next" class="next" ng-click="fetch(data.next)">
+				Next <span class="arrow">&#9656;</span></button>
+		</div>
 	</nav>
 </main>

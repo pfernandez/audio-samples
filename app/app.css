@@ -337,7 +337,8 @@ dt, dd {
 	text-decoration: none;
 }
 
-.tag {
+.tag,
+.nav-numbers button {
 	background: none;
 	border: none;
 	color: #707070;
@@ -349,10 +350,35 @@ dt, dd {
 
 nav {
 	margin-bottom: 20px;
+	position: relative;
 }
 
-nav button:last-of-type {
-	float: right;
+nav .previous {
+	margin-right: 15px;
+	position: absolute;
+	left: 0;
+}
+
+nav .next {
+	margin-left: 15px;
+	position: absolute;
+	right: 0;
+}
+
+nav .inner {
+	margin: 0 auto;
+	display: table;
+}
+
+.nav-numbers {
+	color: #707070;
+	margin: 0;
+	padding: 0;
+	display: inline;
+}
+
+.nav-numbers .current {
+	color: #000;
 }
 
 footer {
@@ -360,7 +386,4 @@ footer {
 	margin: 20px 0;
 	position: absolute;
 	bottom: 0;
-}
-
-@media all and (min-width: 900px) {
 }
