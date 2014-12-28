@@ -24,8 +24,8 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 	
 	$http.defaults.headers.common.Authorization = 
 		'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
-	$scope.query = { text: '', page: 1 };
 	$scope.data = {};
+	$scope.query = { text: '', page: 1 };
 	
 	$scope.fetch = function(url) {
 	
@@ -57,7 +57,7 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 	};
 
 	$scope.searchText = function(text) {
-		$scope.query.text = encodeURIComponent(text || $scope.query.text);
+		typeof text !== 'undefined' && ($scope.query.text = text);
 		searchFreesound();
 		
 		//$location.state('/search/' + uriText); // HTML5 mode only
@@ -72,7 +72,7 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 	};
 	
 	$scope.goToPage = function(page) {
-		$scope.query.page = encodeURIComponent(page || 1);
+		$scope.query.page = page;
 		searchFreesound();
 	};
 	
@@ -149,8 +149,8 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 	
 	function searchFreesound() {
 		$scope.fetch('https://www.freesound.org/apiv2/search/text/'
-			+ '?query=' + $scope.query.text 
-			+ '&page=' + $scope.query.page 
+			+ '?query=' + encodeURIComponent($scope.query.text)
+			+ '&page=' + encodeURIComponent($scope.query.page)
 			+ '&fields=name,url,previews,tags,username');
 	}
 	

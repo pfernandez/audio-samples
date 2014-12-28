@@ -1,7 +1,8 @@
 <main ng-controller="FetchSounds">
 	
 	<form class="search" ng-submit="searchText()">
-		<input type="text" ng-model="query.text" size="30" />
+		<input type="text" size="30" ng-model="query.text" 
+			ng-model-options="{ getterSetter: true }" />
 		<button type="submit">Search</button>
 	</form>
 	
