@@ -1,21 +1,31 @@
 'use strict';
 
 //TODO: URL bookmarking & back/forward navigation.
-
-angular.module('audio-samples.view1', ['ngRoute', 'ngAudio'])
+angular.module('audio-samples.search', ['ngRoute', 'ngAudio'])
 
 .config(['$routeProvider', function($routeProvider) {
-	$routeProvider.when('/', {
-		templateUrl: 'view1/view1.html',
-		controller: 'FetchSounds'
-	});
+  $routeProvider.when('/', {
+    templateUrl: 'html/search.html',
+    controller: 'FetchSounds'
+  })
+  .when('/search', {
+    templateUrl: 'html/search.html',
+    controller: 'FetchSounds'
+  })
+  .when('/search/:text', {
+    templateUrl: 'html/search.html',
+    controller: 'FetchSounds'
+  });
 }])
 
-.controller('FetchSounds',['$scope', '$http', '$templateCache', 'ngAudio',
-function($scope, $http, $templateCache, ngAudio) {
+.controller('FetchSounds',
+['$scope', '$http', '$templateCache', 'ngAudio', '$routeParams',
+function($scope, $http, $templateCache, ngAudio, $routeParams) {
+
+	console.log($routeParams);
 
 	$http.defaults.headers.common.Authorization = 
-		'Token XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+		'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
 	$scope.query = '';
 	$scope.data = {};
 	

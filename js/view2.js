@@ -4,7 +4,7 @@ angular.module('audio-samples.view2', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/view2', {
-    templateUrl: 'view2/view2.html',
+    templateUrl: 'html/view2.html',
     controller: 'View2Ctrl'
   });
 }])

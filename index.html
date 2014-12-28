@@ -1,24 +1,16 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="audio-samples" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="audio-samples" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="audio-samples" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="audio-samples" class="no-js"> <!--<![endif]-->
+<html lang="en" ng-app="audio-samples">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>&darr; SOUNDS RIGHT HERE &darr;</title>
-  <meta name="description" content="">
+  <title>&darr; SOUNDS RIGHT HERE</title>
+  <meta name="description" content="Download free sound samples to use in your projects.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">  <!--
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">-->
-  <link rel="stylesheet" href="app.css">
-  <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
-  <script src="bower_components/underscore/underscore-min.js"></script>
+  <link rel="stylesheet" href="lib/normalize.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="lib/modernizr-2.6.2.min.js"></script>
 </head>
 <body>
-
-	
 	
 	<header class="page-header">
 		<span class="arrow">&#10140;</span>
@@ -34,7 +26,7 @@
 	</header>
 		
 	<div class="container">
-		<!--[if lt IE 7]>
+		<!--[if lt IE 8]>
 		<p class="browsehappy">Your web browser <strong>sucks</strong>. 
 		Please <a href="http://browsehappy.com/">upgrade</a> it, now. 
 		Your local programmer will thank you.</p>
@@ -48,17 +40,12 @@
 
     <!-- In production use:
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-    -->
-  
-  
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="bower_components/angular-audio/app/angular.audio.js"></script>
-  <script src="app.js"></script>
-  <script src="view1/view1.js"></script>
-  <script src="view2/view2.js"></script>
-  <script src="components/version/version.js"></script>
-  <script src="components/version/version-directive.js"></script>
-  <script src="components/version/interpolate-filter.js"></script>
+    --> 
+  <script src="lib/bower_components/angular/angular.js"></script>
+  <script src="lib/bower_components/angular-route/angular-route.js"></script>
+  <script src="lib/bower_components/angular-audio/app/angular.audio.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/view2.js"></script>
 </body>
 </html>
