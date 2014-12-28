@@ -4,29 +4,27 @@
 angular.module('audio-samples.search', ['ngRoute', 'ngAudio'])
 
 .config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/', {
-    templateUrl: 'html/search.html',
-    controller: 'FetchSounds'
-  })
-  .when('/search', {
-    templateUrl: 'html/search.html',
-    controller: 'FetchSounds'
-  })
-  .when('/search/:text', {
-    templateUrl: 'html/search.html',
-    controller: 'FetchSounds'
-  });
+	$routeProvider.when('/', {
+		templateUrl: 'html/search.html',
+		controller: 'FetchSounds'
+	})
+	.when('/search', {
+		templateUrl: 'html/search.html',
+		controller: 'FetchSounds'
+	})
+	.when('/search/:text', {
+		templateUrl: 'html/search.html',
+		controller: 'FetchSounds'
+	});
 }])
 
 .controller('FetchSounds',
-['$scope', '$http', '$templateCache', 'ngAudio', '$routeParams',
-function($scope, $http, $templateCache, ngAudio, $routeParams) {
-
-	console.log($routeParams);
-
+['$scope', '$http', '$templateCache', 'ngAudio', '$routeParams', '$location',
+function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
+	
 	$http.defaults.headers.common.Authorization = 
 		'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
-	$scope.query = '';
+	$scope.query = { text: '', page: 1 };
 	$scope.data = {};
 	
 	$scope.fetch = function(url) {
@@ -59,17 +57,23 @@ function($scope, $http, $templateCache, ngAudio, $routeParams) {
 	};
 
 	$scope.searchText = function(text) {
-		$scope.fetch('https://www.freesound.org/apiv2/search/text/?query='
-			+ encodeURIComponent(text || $scope.query)
-			+ '&fields=name,url,previews,tags,username');
+		$scope.query.text = encodeURIComponent(text || $scope.query.text);
+		searchFreesound();
+		
+		//$location.state('/search/' + uriText); // HTML5 mode only
+		//$location.path('/search/' + uriText); // Triggers page reload
+		//console.log($location.path());
+		//console.log($routeParams);
+		
+		// TODO: Simplest option here is probably to search a url query string
+		// on page load every time, and peform all searches be reloading the
+		// page. Not very ajaxy but simple and effective. See $location.search:
+		// https://docs.angularjs.org/api/ng/service/$location/#search
 	};
 	
 	$scope.goToPage = function(page) {
-		console.log('hello?');
-		$scope.fetch('https://www.freesound.org/apiv2/search/text/?query='
-			+ encodeURIComponent($scope.query) + '&page='
-			+ encodeURIComponent(page || 1)
-			+ '&fields=name,url,previews,tags,username');
+		$scope.query.page = encodeURIComponent(page || 1);
+		searchFreesound();
 	};
 	
 	$scope.play = function() {
@@ -142,6 +146,13 @@ function($scope, $http, $templateCache, ngAudio, $routeParams) {
 		
 		return result;
 	};
+	
+	function searchFreesound() {
+		$scope.fetch('https://www.freesound.org/apiv2/search/text/'
+			+ '?query=' + $scope.query.text 
+			+ '&page=' + $scope.query.page 
+			+ '&fields=name,url,previews,tags,username');
+	}
 	
 	// Return a specified argument from a url string, 
 	// either as a number or string as appropriate.
