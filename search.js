@@ -1,26 +1,25 @@
 'use strict';
 
+
 //TODO: URL bookmarking & back/forward navigation.
-angular.module('audio-samples.search', ['ngRoute', 'ngAudio'])
+angular.module('audio-samples', ['ngRoute', 'ngAudio'])
 
 .config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/', {
-		templateUrl: 'html/search.html',
+		templateUrl: 'search.html',
 		controller: 'FetchSounds'
 	})
-	.when('/search', {
-		templateUrl: 'html/search.html',
-		controller: 'FetchSounds'
-	})
-	.when('/search/:text', {
-		templateUrl: 'html/search.html',
-		controller: 'FetchSounds'
-	});
+	//.when('/search', {
+	//	templateUrl: 'html/search.html',
+	//	controller: 'FetchSounds'
+	//})
+	.otherwise({redirectTo: '/'});
+	//$locationProvider.html5Mode(true);
 }])
 
 .controller('FetchSounds',
-['$scope', '$http', '$templateCache', 'ngAudio', '$routeParams', '$location',
-function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
+['$scope', '$http', '$templateCache', 'ngAudio', '$location',
+function($scope, $http, $templateCache, ngAudio, $location) {
 	
 	$http.defaults.headers.common.Authorization = 
 		'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
@@ -60,15 +59,15 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 		typeof text !== 'undefined' && ($scope.query.text = text);
 		searchFreesound();
 		
-		//$location.state('/search/' + uriText); // HTML5 mode only
-		//$location.path('/search/' + uriText); // Triggers page reload
-		//console.log($location.path());
-		//console.log($routeParams);
-		
-		// TODO: Simplest option here is probably to search a url query string
-		// on page load every time, and peform all searches be reloading the
-		// page. Not very ajaxy but simple and effective. See $location.search:
+		// TODO: Correct option here is probably to search a url query string
+		// on page load every time and load the corresponding state. This 
+		// state will need to be pushed to the url with every search. 
+		// See $location.search:
 		// https://docs.angularjs.org/api/ng/service/$location/#search
+		
+		//$location.state('/search/?' + serialize($scope.query)); //reloads page; try server config first
+		// console.log($location.search());
+		
 	};
 	
 	$scope.goToPage = function(page) {
@@ -113,14 +112,17 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 	
 		var data = $scope.data,
 			thisPage = data.thisPage,
-			nPages = Math.ceil(data.count / data.results.length),
-			nPerPage = 10,
+			nResults = data.results.length,
+			nPerPage = 15,
+			nPages = Math.ceil(data.count / nPerPage),
 			pageFrac = thisPage / nPerPage,
 			roundDn = Math.floor(pageFrac) * nPerPage,
 			firstLink = (roundDn > 0 ? roundDn : 1),
 			roundUp = Math.ceil(pageFrac) * nPerPage,
 			lastLink = (roundUp == firstLink ? roundUp + nPerPage : roundUp),
+			firstLink = (firstLink < nPages - nPerPage ? firstLink : nPages - nPerPage),
 			lastLink = (nPages < lastLink ? nPages : lastLink),
+			isLastPage = (thisPage == lastLink),
 			result = '';
 			
 		for(var i=firstLink; i<lastLink; i++) {
@@ -132,12 +134,14 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 					+ (i != lastLink-1 ? ',</button> ' : '</button>');
 			}
 		}
+		
+		// TODO: Angular appends the last link without class="current" WTF
 	
 		if(!(thisPage == nPages) && lastLink < nPages) {
 			result += ' <button ng-click="goToPage(' + lastLink 
 				+ ')">...</button> <button ng-click="goToPage(' + nPages
 				+ ')">' + insertCommas(nPages) + '</button>';
-		} else if(thisPage != lastLink) {
+		} else if(!isLastPage) {
 			result += ', <button ng-click="goToPage(' + lastLink + ')">' 
 				+ lastLink + '</button>';
 		} else {
@@ -173,19 +177,30 @@ function($scope, $http, $templateCache, ngAudio, $routeParams, $location) {
 		return !!(sound.audio && sound.audio.id);
 	}
 	
+	function serialize(obj) {
+		var str = [];
+		for(var p in obj) {
+			if (obj.hasOwnProperty(p)) {
+				str.push(encodeURIComponent(p) + "=" 
+					+ encodeURIComponent(obj[p]));
+			}
+		}
+		return str.join("&");
+	}
+	
 }])
 
 .directive('dir', function($compile, $parse) {
-    return {
-      restrict: 'E',
-      link: function(scope, element, attr) {
-        scope.$watch(attr.content, function() {
-          element.html($parse(attr.content)(scope));
-          $compile(element.contents())(scope);
-        }, true);
-      }
+  return {
+    restrict: 'E',
+    link: function(scope, element, attr) {
+      scope.$watch(attr.content, function() {
+        element.html($parse(attr.content)(scope));
+        $compile(element.contents())(scope);
+      }, true);
     }
-  })
+  }
+})
 
 .filter('trusted', ['$sce', function($sce) {
     return function(url) {

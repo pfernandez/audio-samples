@@ -374,7 +374,8 @@ nav .inner {
 	color: #707070;
 	margin: 0;
 	padding: 0;
-	display: inline;
+	display: inline-block;
+	max-width: 430px;
 }
 
 .nav-numbers .current {
