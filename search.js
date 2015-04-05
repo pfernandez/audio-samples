@@ -4,7 +4,7 @@
 //TODO: URL bookmarking & back/forward navigation.
 angular.module('audio-samples', ['ngRoute', 'ngAudio'])
 
-.config(['$routeProvider', function($routeProvider) {
+.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 	$routeProvider.when('/', {
 		templateUrl: 'search.html',
 		controller: 'FetchSounds'
@@ -13,26 +13,42 @@ angular.module('audio-samples', ['ngRoute', 'ngAudio'])
 	//	templateUrl: 'html/search.html',
 	//	controller: 'FetchSounds'
 	//})
-	.otherwise({redirectTo: '/'});
-	//$locationProvider.html5Mode(true);
+	;//.otherwise({redirectTo: '/'});
+	$locationProvider.html5Mode(true);
 }])
 
 .controller('FetchSounds',
 ['$scope', '$http', '$templateCache', 'ngAudio', '$location',
 function($scope, $http, $templateCache, ngAudio, $location) {
-	
-	$http.defaults.headers.common.Authorization = 
-		'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
-	$scope.data = {};
-	$scope.query = { text: '', page: 1 };
-	
+
+	// Init function will be run whenever the page loads or the url changes.
+	$scope.init = function () {
+		$http.defaults.headers.common.Authorization = 
+				'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
+		$scope.data = {};
+		
+		// If there's a query string present in the url, do a search on it.
+		var query = $location.search();
+		console.log(query);
+		if(! _.isEmpty(query)) {
+			
+			// Execute the search with parameters from the query string. For now this is just a call to 
+			// the Freesound API but hopefully that can be expanded later.
+			$scope.fetch('https://www.freesound.org/apiv2/search/text/'
+				+ '?query=' + encodeURIComponent(query.text)
+				+ '&page=' + encodeURIComponent(query.page)
+				+ '&fields=name,url,previews,tags,username');
+		}
+	}
+		
 	$scope.fetch = function(url) {
 	
 		// Pause any currently playing sounds.
 		($scope.data.results || []).map(function(sound) {
 			if(isLoaded(sound)) { sound.audio.pause() }
 		});
-	
+
+        // Do the AJAX request.
 		$http.get(url.replace('http:', 'https:'), {cache: $templateCache})
 		.success(function(response) {
 			
@@ -48,6 +64,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 				sound.audio = {progress: 0, volume: 1};
 			});
 			
+			// Set the results as our currently displayed data.
 			$scope.data = response;
 				
 		}).error(function(response, status) {
@@ -55,24 +72,16 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		});
 	};
 
-	$scope.searchText = function(text) {
-		typeof text !== 'undefined' && ($scope.query.text = text);
-		searchFreesound();
-		
-		// TODO: Correct option here is probably to search a url query string
-		// on page load every time and load the corresponding state. This 
-		// state will need to be pushed to the url with every search. 
-		// See $location.search:
-		// https://docs.angularjs.org/api/ng/service/$location/#search
-		
-		//$location.state('/search/?' + serialize($scope.query)); //reloads page; try server config first
-		// console.log($location.search());
-		
-	};
+	$scope.searchText = function() {
+		//TODO: simplify this crap. $scope.query is now only used here. Take a look at the html input too.
+		var text = $scope.query.text;
+		console.log(text);
+		typeof text !== 'undefined' && ($location.search('text', text));
+  };
 	
 	$scope.goToPage = function(page) {
-		$scope.query.page = page;
-		searchFreesound();
+		console.log(page);
+		Number(page) === page && page % 1 === 0 && ($location.search('page', page));
 	};
 	
 	$scope.play = function() {
@@ -128,7 +137,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		for(var i=firstLink; i<lastLink; i++) {
 			if(thisPage == i) {
 				result += '<span class="current">' + i
-					 + (i != lastLink-1 ? ',</span> ' : '</span>');
+					+ (i != lastLink-1 ? ',</span> ' : '</span>');
 			} else {
 				result += '<button ng-click="goToPage(' + i + ')">' + i 
 					+ (i != lastLink-1 ? ',</button> ' : '</button>');
@@ -136,7 +145,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		}
 		
 		// TODO: Angular appends the last link without class="current" WTF
-	
+		
 		if(!(thisPage == nPages) && lastLink < nPages) {
 			result += ' <button ng-click="goToPage(' + lastLink 
 				+ ')">...</button> <button ng-click="goToPage(' + nPages
@@ -150,13 +159,6 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		
 		return result;
 	};
-	
-	function searchFreesound() {
-		$scope.fetch('https://www.freesound.org/apiv2/search/text/'
-			+ '?query=' + encodeURIComponent($scope.query.text)
-			+ '&page=' + encodeURIComponent($scope.query.page)
-			+ '&fields=name,url,previews,tags,username');
-	}
 	
 	// Return a specified argument from a url string, 
 	// either as a number or string as appropriate.
@@ -176,18 +178,8 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 	function isLoaded(sound) {
 		return !!(sound.audio && sound.audio.id);
 	}
-	
-	function serialize(obj) {
-		var str = [];
-		for(var p in obj) {
-			if (obj.hasOwnProperty(p)) {
-				str.push(encodeURIComponent(p) + "=" 
-					+ encodeURIComponent(obj[p]));
-			}
-		}
-		return str.join("&");
-	}
-	
+
+	$scope.init();
 }])
 
 .directive('dir', function($compile, $parse) {
@@ -203,9 +195,9 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 })
 
 .filter('trusted', ['$sce', function($sce) {
-    return function(url) {
-        return $sce.trustAsResourceUrl(url);
-    }
+	return function(url) {
+		return $sce.trustAsResourceUrl(url);
+	}
 }])
 
 .filter('renderHTML', ['$sce', function($sce) {

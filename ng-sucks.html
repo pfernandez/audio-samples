@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="audio-samples">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>&darr; SOUNDS RIGHT HERE</title>
+	<meta name="description" content="Download free sound samples to use in your projects.">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="bower_components/normalize.css/normalize.css">
+	<link rel="stylesheet" href="style.css">
+	<script src="bower_components/modernizr/modernizr.js"></script>
+</head>
+<body>
+	
+	<header class="page-header">
+		<a href="/">
+			<span class="arrow">&#10140;</span>
+			<h1>Sounds right here</h1>
+			<em>Download all the clips you need, baby.</em>
+		</a>
+	</header>
+		
+	<div class="container">
+	
+		<!--[if lt IE 8]>
+		<p class="browsehappy">Your web browser <strong>sucks</strong>. 
+		Please <a href="http://browsehappy.com/">upgrade</a> it, now. 
+		Your local programmer will thank you.</p>
+		<![endif]-->
+		
+		<form class="search" ng-submit="searchText()">
+			<input type="text" size="30" />
+			<button type="submit">Search</button>
+		</form>
+	
+		<h2 ng-if="0 <= data.count">
+			Total results found: {{data.count | numberWithCommas}}
+		</h2>
+	
+		<ul class="song-list"><li ng-repeat="sound in data.results track by $index">
+	
+			<h3>{{data.start + $index}}. {{sound.name | noExtension}}</h3>
+		
+			<div class="player" ng-class="{
+				vol1: (sound.audio.volume > 0),
+				vol2: (sound.audio.volume > 0.333),
+				vol3: (sound.audio.volume > 0.667),
+				vol4: (sound.audio.volume == 1)}">
+				<button ng-click="play()" class="pause-play paused"
+					ng-class="{paused: isPaused(sound)}">Play/Pause</button>
+				<input type="range" min="0" max="1" step="0.01" class="progress"
+					ng-model="sound.audio.progress">
+				<span class="time">{{sound.audio.currentTime | asMinutes}}</span>
+				<span class="volume-icon"></span>
+				<input type=range min=0 max=1 step=0.01 class="volume"
+					ng-model="sound.audio.volume">
+				</input>
+			</div>
+		
+		      <a href="{{sound.previews['preview-hq-mp3'] | trusted}}"
+		      	download="{{sound.name}}" class="download">
+		      	<span class="arrow">&darr;</span>mp3
+		      </a>
+		      <a href="{{sound.previews['preview-hq-ogg'] | trusted}}" 
+		      	download="{{sound.name}}" class="download">
+		      	<span class="arrow">&darr;</span>ogg
+		      </a>
+		
+			<dl>
+				<dt>Contributed by:</dt>
+				<dd><a href="{{sound.url}}">{{sound.username}}</a></dd>
+				<br>
+				<dt>Tags:</dt>
+				<dd ng-repeat="tag in sound.tags">
+					<button ng-click="searchText(tag)" class="tag">{{tag}}</button>
+				</dd>
+			</dl>
+		
+		</li></ul>
+		<nav class="result-links">
+			<div class="inner">
+				<button ng-if="data.previous" class="previous"
+					ng-click="fetch(data.previous)">
+					<span class="arrow">&#9666;</span> Previous</button>
+				<dir ng-if="data.count" class="nav-numbers" 
+					content="navNumbers()"></dir>
+				<button ng-if="data.next" class="next" ng-click="fetch(data.next)">
+					Next <span class="arrow">&#9656;</span></button>
+			</div>
+		</nav>
+
+	</div>
+	  
+	<footer>
+		You're welcome. <a href="artsdigital.co">artsdigital.co</a>
+	</footer>
+
+</body>
+</html>

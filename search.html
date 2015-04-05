@@ -1,4 +1,4 @@
-<main ng-controller="FetchSounds">
+<main>
 	
 	<form class="search" ng-submit="searchText()">
 		<input type="text" size="30" ng-model="query.text" 
@@ -29,16 +29,16 @@
 				ng-model="sound.audio.volume">
 			</input>
 		</div>
-		
-        <a href="{{sound.previews['preview-hq-mp3'] | trusted}}"
-        	download="{{sound.name}}" class="download">
-        	<span class="arrow">&darr;</span>mp3
-        </a>
-        <a href="{{sound.previews['preview-hq-ogg'] | trusted}}" 
-        	download="{{sound.name}}" class="download">
-        	<span class="arrow">&darr;</span>ogg
-        </a>
-		
+
+		<a href="{{sound.previews['preview-hq-mp3'] | trusted}}"
+			download="{{sound.name}}" class="download">
+			<span class="arrow">&darr;</span>mp3
+		</a>
+		<a href="{{sound.previews['preview-hq-ogg'] | trusted}}" 
+			download="{{sound.name}}" class="download">
+			<span class="arrow">&darr;</span>ogg
+		</a>
+
 		<dl>
 			<dt>Contributed by:</dt>
 			<dd><a href="{{sound.url}}">{{sound.username}}</a></dd>
