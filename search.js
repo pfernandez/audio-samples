@@ -1,7 +1,5 @@
 'use strict';
 
-
-//TODO: URL bookmarking & back/forward navigation.
 angular.module('audio-samples', ['ngRoute', 'ngAudio'])
 
 .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
@@ -29,7 +27,6 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		
 		// If there's a query string present in the url, do a search on it.
 		var query = $location.search();
-		console.log(query);
 		if(! _.isEmpty(query)) {
 			
 			// Execute the search with parameters from the query string. For now this is just a call to 
@@ -71,16 +68,13 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 			console.log(status + " - Request failed: " + response);
 		});
 	};
-
+	
 	$scope.searchText = function() {
-		//TODO: simplify this crap. $scope.query is now only used here. Take a look at the html input too.
-		var text = $scope.query.text;
-		console.log(text);
-		typeof text !== 'undefined' && ($location.search('text', text));
+		var text = $scope.text;
+		typeof text !== 'undefined' && ($location.search({'text': text}));
   };
 	
 	$scope.goToPage = function(page) {
-		console.log(page);
 		Number(page) === page && page % 1 === 0 && ($location.search('page', page));
 	};
 	
@@ -121,40 +115,39 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 	
 		var data = $scope.data,
 			thisPage = data.thisPage,
-			nResults = data.results.length,
-			nPerPage = 15,
-			nPages = Math.ceil(data.count / nPerPage),
-			pageFrac = thisPage / nPerPage,
-			roundDn = Math.floor(pageFrac) * nPerPage,
-			firstLink = (roundDn > 0 ? roundDn : 1),
-			roundUp = Math.ceil(pageFrac) * nPerPage,
-			lastLink = (roundUp == firstLink ? roundUp + nPerPage : roundUp),
-			firstLink = (firstLink < nPages - nPerPage ? firstLink : nPages - nPerPage),
+			resultsPerPage = 15,
+			linksToDisplay = 10,
+			nPages = Math.ceil(data.count / resultsPerPage),
+			firstLink = thisPage - thisPage % linksToDisplay,
+			firstLink = (firstLink == 0 ? 1 : firstLink),
+			lastLink = thisPage + linksToDisplay - thisPage % linksToDisplay,
 			lastLink = (nPages < lastLink ? nPages : lastLink),
-			isLastPage = (thisPage == lastLink),
 			result = '';
-			
-		for(var i=firstLink; i<lastLink; i++) {
-			if(thisPage == i) {
-				result += '<span class="current">' + i
-					+ (i != lastLink-1 ? ',</span> ' : '</span>');
-			} else {
-				result += '<button ng-click="goToPage(' + i + ')">' + i 
-					+ (i != lastLink-1 ? ',</button> ' : '</button>');
+		
+		if(nPages > 1) {
+		
+			for(var i=firstLink; i<lastLink; i++) {
+				if(thisPage == i) {
+					result += '<span class="current">' + i
+						+ (i != lastLink-1 ? ',</span> ' : '</span>');
+				} else {
+					result += '<button ng-click="goToPage(' + i + ')">' + i 
+						+ (i != lastLink-1 ? ',</button> ' : '</button>');
+				}
 			}
-		}
 		
-		// TODO: Angular appends the last link without class="current" WTF
+			// TODO: Angular appends the last link without class="current" WTF
 		
-		if(!(thisPage == nPages) && lastLink < nPages) {
-			result += ' <button ng-click="goToPage(' + lastLink 
-				+ ')">...</button> <button ng-click="goToPage(' + nPages
-				+ ')">' + insertCommas(nPages) + '</button>';
-		} else if(!isLastPage) {
-			result += ', <button ng-click="goToPage(' + lastLink + ')">' 
-				+ lastLink + '</button>';
-		} else {
-			result += ', ' + lastLink;
+			if(thisPage != nPages && lastLink < nPages) {
+				result += ' <button ng-click="goToPage(' + lastLink 
+					+ ')">...</button> <button ng-click="goToPage(' + nPages
+					+ ')">' + insertCommas(nPages) + '</button>';
+			} else if(thisPage != lastLink) {
+				result += ', <button ng-click="goToPage(' + lastLink + ')">' 
+					+ lastLink + '</button>';
+			} else {
+				result += ', <span class="current">' + lastLink + '</span>';
+			}
 		}
 		
 		return result;

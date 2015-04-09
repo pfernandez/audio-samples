@@ -1,7 +1,7 @@
 <main>
 	
 	<form class="search" ng-submit="searchText()">
-		<input type="text" size="30" ng-model="query.text" 
+		<input type="text" size="30" ng-model="text" 
 			ng-model-options="{ getterSetter: true }" />
 		<button type="submit">Search</button>
 	</form>
@@ -53,11 +53,11 @@
 	<nav class="result-links">
 		<div class="inner">
 			<button ng-if="data.previous" class="previous"
-				ng-click="fetch(data.previous)">
+				ng-click="goToPage(data.thisPage - 1)">
 				<span class="arrow">&#9666;</span> Previous</button>
 			<dir ng-if="data.count" class="nav-numbers" 
 				content="navNumbers()"></dir>
-			<button ng-if="data.next" class="next" ng-click="fetch(data.next)">
+			<button ng-if="data.next" class="next" ng-click="goToPage(data.thisPage + 1)">
 				Next <span class="arrow">&#9656;</span></button>
 		</div>
 	</nav>
