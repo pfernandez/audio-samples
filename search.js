@@ -69,8 +69,8 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		});
 	};
 	
-	$scope.searchText = function() {
-		var text = $scope.text;
+	$scope.searchText = function(text) {
+		var text = text || $scope.text;
 		typeof text !== 'undefined' && ($location.search({'text': text}));
   };
 	
