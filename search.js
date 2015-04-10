@@ -11,7 +11,7 @@ angular.module('audio-samples', ['ngRoute', 'ngAudio'])
 	//	templateUrl: 'html/search.html',
 	//	controller: 'FetchSounds'
 	//})
-	;//.otherwise({redirectTo: '/'});
+	.otherwise({redirectTo: '/'});
 	$locationProvider.html5Mode(true);
 }])
 
@@ -29,6 +29,8 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		var query = $location.search();
 		if(! _.isEmpty(query)) {
 			
+			$scope.placeholder = query.text || '';
+			
 			// Execute the search with parameters from the query string. For now this is just a call to 
 			// the Freesound API but hopefully that can be expanded later.
 			$scope.fetch('https://www.freesound.org/apiv2/search/text/'
@@ -37,15 +39,10 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 				+ '&fields=name,url,previews,tags,username');
 		}
 	}
-		
+	
 	$scope.fetch = function(url) {
 	
-		// Pause any currently playing sounds.
-		($scope.data.results || []).map(function(sound) {
-			if(isLoaded(sound)) { sound.audio.pause() }
-		});
-
-        // Do the AJAX request.
+		// Do the AJAX request.
 		$http.get(url.replace('http:', 'https:'), {cache: $templateCache})
 		.success(function(response) {
 			
@@ -71,10 +68,12 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 	
 	$scope.searchText = function(text) {
 		var text = text || $scope.text;
+		pauseAll();
 		typeof text !== 'undefined' && ($location.search({'text': text}));
   };
 	
 	$scope.goToPage = function(page) {
+		pauseAll();
 		Number(page) === page && page % 1 === 0 && ($location.search('page', page));
 	};
 	
@@ -96,7 +95,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 				}
 			}
 			if(!sound.audio) {
-				alert("Sorry, your web browser doesn't support HTML audio"); 
+				alert("Sorry, your web browser doesn't support HTML audio");
 			}
 		}
 		var audio = sound.audio;
@@ -135,9 +134,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 						+ (i != lastLink-1 ? ',</button> ' : '</button>');
 				}
 			}
-		
-			// TODO: Angular appends the last link without class="current" WTF
-		
+			
 			if(thisPage != nPages && lastLink < nPages) {
 				result += ' <button ng-click="goToPage(' + lastLink 
 					+ ')">...</button> <button ng-click="goToPage(' + nPages
@@ -170,6 +167,13 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 	
 	function isLoaded(sound) {
 		return !!(sound.audio && sound.audio.id);
+	}
+	
+	function pauseAll() {
+		// Pause any currently playing sounds.
+		($scope.data.results || []).map(function(sound) {
+			if(isLoaded(sound)) { sound.audio.pause() }
+		});
 	}
 
 	$scope.init();

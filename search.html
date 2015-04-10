@@ -1,13 +1,13 @@
 <main>
 	
 	<form class="search" ng-submit="searchText()">
-		<input type="text" size="30" ng-model="text" 
-			ng-model-options="{ getterSetter: true }" />
+		<input type="text" size="30" ng-model="text" ng-model-options="{ getterSetter: true }" 
+			placeholder="{{placeholder}}" />
 		<button type="submit">Search</button>
 	</form>
 	
 	<h2 ng-if="0 <= data.count">
-		Total results found: {{data.count | numberWithCommas}}
+		{{data.count | numberWithCommas}} results found.
 	</h2>
 	
 	<ul class="song-list"><li ng-repeat="sound in data.results track by $index">
@@ -23,7 +23,7 @@
 				ng-class="{paused: isPaused(sound)}">Play/Pause</button>
 			<input type="range" min="0" max="1" step="0.01" class="progress"
 				ng-model="sound.audio.progress">
-			<span class="time">{{sound.audio.currentTime | asMinutes}}</span>
+			<span class="time">{{sound.audio.remaining | asMinutes}}</span>
 			<span class="volume-icon"></span>
 			<input type=range min=0 max=1 step=0.01 class="volume"
 				ng-model="sound.audio.volume">
