@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('audio-samples', ['ngRoute', 'ngAudio'])
+angular.module('audio-samples', ['ngRoute', 'ngAudio', 'angular-loading-bar', 'ngAnimate'])
 
 .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 	$routeProvider.when('/', {
-		templateUrl: 'search.html',
+		templateUrl: 'index.html',
 		controller: 'FetchSounds'
 	})
 	//.when('/search', {
@@ -13,6 +13,10 @@ angular.module('audio-samples', ['ngRoute', 'ngAudio'])
 	//})
 	.otherwise({redirectTo: '/'});
 	$locationProvider.html5Mode(true);
+}])
+
+.config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+  cfpLoadingBarProvider.includeSpinner = false;
 }])
 
 .controller('FetchSounds',
@@ -25,11 +29,13 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 				'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
 		$scope.data = {};
 		
-		// If there's a query string present in the url, do a search on it.
+		// If there's a query string present in the url, act on it.
 		var query = $location.search();
 		if(! _.isEmpty(query)) {
 			
-			$scope.placeholder = query.text || '';
+			// Append the query args to our $scope object. This will update the view anywhere these
+			// properties are referenced in the html template.
+			_.extend($scope, query);
 			
 			// Execute the search with parameters from the query string. For now this is just a call to 
 			// the Freesound API but hopefully that can be expanded later.
@@ -37,10 +43,14 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 				+ '?query=' + encodeURIComponent(query.text)
 				+ '&page=' + encodeURIComponent(query.page)
 				+ '&fields=name,url,previews,tags,username');
+		} else {
+			$scope.fetched = true;
 		}
 	}
 	
 	$scope.fetch = function(url) {
+		
+		$scope.fetched = false; // used for fade in/out
 	
 		// Do the AJAX request.
 		$http.get(url.replace('http:', 'https:'), {cache: $templateCache})
@@ -60,6 +70,8 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 			
 			// Set the results as our currently displayed data.
 			$scope.data = response;
+			
+			$scope.fetched = true;
 				
 		}).error(function(response, status) {
 			console.log(status + " - Request failed: " + response);
@@ -115,7 +127,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		var data = $scope.data,
 			thisPage = data.thisPage,
 			resultsPerPage = 15,
-			linksToDisplay = 10,
+			linksToDisplay = 7,
 			nPages = Math.ceil(data.count / resultsPerPage),
 			firstLink = thisPage - thisPage % linksToDisplay,
 			firstLink = (firstLink == 0 ? 1 : firstLink),
