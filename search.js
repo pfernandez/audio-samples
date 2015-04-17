@@ -4,7 +4,7 @@ angular.module('audio-samples', ['ngRoute', 'ngAudio', 'angular-loading-bar', 'n
 
 .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 	$routeProvider.when('/', {
-		templateUrl: 'index.html',
+		templateUrl: 'search.html',
 		controller: 'FetchSounds'
 	})
 	//.when('/search', {
@@ -27,11 +27,14 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 	$scope.init = function () {
 		$http.defaults.headers.common.Authorization = 
 				'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
-		$scope.data = {};
+		$scope.data = {},
+		$scope.fetched = false;
 		
 		// If there's a query string present in the url, act on it.
 		var query = $location.search();
 		if(! _.isEmpty(query)) {
+			
+			$scope.fetched = true;
 			
 			// Append the query args to our $scope object. This will update the view anywhere these
 			// properties are referenced in the html template.
@@ -43,14 +46,10 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 				+ '?query=' + encodeURIComponent(query.text)
 				+ '&page=' + encodeURIComponent(query.page)
 				+ '&fields=name,url,previews,tags,username');
-		} else {
-			$scope.fetched = true;
 		}
 	}
 	
 	$scope.fetch = function(url) {
-		
-		$scope.fetched = false; // used for fade in/out
 	
 		// Do the AJAX request.
 		$http.get(url.replace('http:', 'https:'), {cache: $templateCache})

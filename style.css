@@ -62,6 +62,8 @@ html {
 
 body {
 	background: #fff;
+	margin-bottom: 227px; /* 60px + sticky footer height */
+	overflow-y: scroll; /* prevents shifting during animations */
 }
 
 a {
@@ -344,30 +346,33 @@ dt, dd {
 	outline: none;
 }
 
-nav {
-	margin: 60px 0;
+.result-links {
 	position: relative;
 }
 
-nav .previous,
-nav .next {
+.results .result-links {
+	margin: 60px 0;
+}
+
+.result-links .previous,
+.result-links .next {
 	color: #0000ff;
 	font-size: 16px;
 	position: absolute;
 	top: -2px;
 }
 
-nav .previous {
+.result-links .previous {
 	margin-right: 15px;
 	left: 0;
 }
 
-nav .next {
+.result-links .next {
 	margin-left: 15px;
 	right: 0;
 }
 
-nav .inner {
+.result-links .inner {
 	margin: 0 auto;
 	display: table;
 }
@@ -391,6 +396,12 @@ nav .inner {
 .results .page-footer {
 	padding: 30px 0;
 	background: #F0F1F3;
+	
+	/* sticky footer */
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 167px;
 }
 
 .about em {
@@ -400,21 +411,22 @@ nav .inner {
 }
 
 /* The starting CSS styles for the enter animation */
-.fade.ng-show {
-  transition:0.5s linear all;
-  opacity:0;
+.fade.ng-enter {
+  transition: opacity 1s ease-in;
+  opacity: 0;
 }
 
 /* The starting CSS styles for the enter animation */
-.fade.ng-show.ng-show-active {
-  opacity:1;
+.fade.ng-enter.ng-enter-active {
+  opacity: 1;
 }
 
 /* now the element will fade out before it is removed from the DOM */
-.fade.ng-hide {
-  transition:0.5s linear all;
-  opacity:0;
+.fade.ng-leave {
+  transition: opacity 1s ease-out;
+  opacity: 1;
 }
-.fade.ng-hide.ng-hide-active {
-  opacity:0;
+.fade.ng-leave.ng-leave-active {
+  opacity: 0;
 }
+
