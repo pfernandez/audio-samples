@@ -96,9 +96,9 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 			if(el.canPlayType) {
 				var source;
 				if(el.canPlayType('audio/ogg; codecs="vorbis"')) {
-					source = sound.previews['preview-hq-ogg'];
+					source = sound.previews['preview-lq-ogg'];
 				} else if(el.canPlayType('audio/mpeg')) {
-					source = sound.previews['preview-hq-mp3'];
+					source = sound.previews['preview-lq-mp3'];
 				}
 				if(source) {
 					sound.audio = ngAudio.load(source);
