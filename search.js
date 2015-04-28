@@ -7,10 +7,6 @@ angular.module('audio-samples', ['ngRoute', 'ngAudio', 'angular-loading-bar', 'n
 		templateUrl: 'search.html',
 		controller: 'FetchSounds'
 	})
-	//.when('/search', {
-	//	templateUrl: 'html/search.html',
-	//	controller: 'FetchSounds'
-	//})
 	.otherwise({redirectTo: '/'});
 	$locationProvider.html5Mode(true);
 }])
@@ -28,6 +24,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 		$http.defaults.headers.common.Authorization = 
 				'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
 		$scope.data = {},
+		$scope.resultsPerPage = 15;
 		$scope.fetched = false;
 		
 		// If there's a query string present in the url, act on it.
@@ -50,7 +47,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 	}
 	
 	$scope.fetch = function(url) {
-	
+		
 		// Do the AJAX request.
 		$http.get(url.replace('http:', 'https:'), {cache: $templateCache})
 		.success(function(response) {
@@ -59,7 +56,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 			// number the page begins with.
 			var prevUrl = response.previous,
 				prevPage = (prevUrl ? getQueryVar(prevUrl, 'page') : 0);
-			response.start = response.results.length * prevPage + 1;
+			response.start = $scope.resultsPerPage * prevPage + 1;
 			response.thisPage = prevPage + 1;
 			
 			// Set default player values.
@@ -125,7 +122,7 @@ function($scope, $http, $templateCache, ngAudio, $location) {
 	
 		var data = $scope.data,
 			thisPage = data.thisPage,
-			resultsPerPage = 15,
+			resultsPerPage = $scope.resultsPerPage,
 			linksToDisplay = 7,
 			nPages = Math.ceil(data.count / resultsPerPage),
 			firstLink = thisPage - thisPage % linksToDisplay,
