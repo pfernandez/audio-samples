@@ -15,7 +15,9 @@ body, p, h2 {
 }
 
 h1, h3, h4, h5, h6, ol, footer, 
-.arrow, .search button {
+.arrow,
+.search button,
+.contact input[type=submit] {
 	font-family: 'Share Tech Mono', monospace;
 }
 
@@ -112,7 +114,7 @@ a {
 input, button { 
     margin:0; 
     padding:0;
-    outline:none; 
+    outline:none;
     font-family:inherit;
     border-radius: 0;
     background: none;
@@ -125,14 +127,18 @@ button {
 	border: none;
 }
 
-.search button {
+.search button,
+.contact input[type=submit] {
 	background: #F0F1F3;
 	font-size: 42px;
 	text-transform: uppercase;
 }
 
-input, 
+input,
+textarea, 
 .search button {
+	-webkit-appearance: none;
+	outline: none;
 	border: 2px solid #57585A;
 	color: #57585A;
 }
@@ -146,13 +152,33 @@ input,
 	height: 100%;
 }
 
+.search input,
+.contact input,
+textarea {
+	padding: 10px;
+	font-size: 21px;
+}
+
+.contact input,
+.contact textarea {
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.contact label,
+.submission-message {
+	font-size: 18px;
+	line-height: 1;
+	color: #57585A;
+	margin-bottom: 4px;
+	display: block;
+}
+
 .search input {
 	width: 68.5%;
-	padding: 10px;
-	text-align: center;
-	font-size: 21px;
-	position: relative;
 	background: url(img/icon_search.png) no-repeat 10px;
+	text-align: center;
+	position: relative;
 }
 
 .search button {
@@ -161,39 +187,22 @@ input,
 	padding-top: 2.5px;
 }
 
-@media all and (max-width: 1000px) {
-
-	.results .sound-search {
-		position: relative;
-		background: #fff;
-		top: 20px;
-		left: 0;
-		right: 0;
-		margin-top: 0;
-	}
-	
-	.search input,
-	.search button {
-		width: 100%;
-		margin-bottom: 20px;
-	}
-	
-	.search button {
-		margin-bottom: 25px;
-	}
-}
-
-@media all and (max-width: 650px) {
-
-	.results .sound-search {
-		top: -110px;
-	}
-}
-
 .search button:hover,
-.search input:focus {
+.search input:focus,
+.contact input:hover,
+.contact input:focus,
+.contact textarea:hover,
+.contact textarea:focus {
 	border-color: #000;
 	color: #000;
+}
+
+.error {
+	border-color: rgba(255, 0, 0, 0.75);
+}
+
+.submission-message {
+	text-align: center;
 }
 
 .results-count {
@@ -496,3 +505,29 @@ dt, dd {
   }
 }
 
+@media all and (max-width: 650px) {
+	.results .sound-search {
+		top: -110px;
+	}
+}
+
+@media all and (max-width: 1000px) {
+	.results .sound-search {
+		position: relative;
+		background: #fff;
+		top: 20px;
+		left: 0;
+		right: 0;
+		margin-top: 0;
+	}
+	
+	.search input,
+	.search button {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+	
+	.search button {
+		margin-bottom: 25px;
+	}
+}
