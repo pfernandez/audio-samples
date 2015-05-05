@@ -15,11 +15,11 @@ angular.module('audio-samples', [
 	function($routeProvider, $locationProvider) {
 	
 		$routeProvider.when('/', {
-			templateUrl: 'search/search.html',
+			templateUrl: 'html/search.html',
 			controller: 'Search'
 		})
-		.when('contact', {
-			templateUrl: 'contact/contact.html',
+		.when('/contact', {
+			templateUrl: 'html/contact.html',
 			controller: 'Contact'
 		})
 		.otherwise({redirectTo: '/'});

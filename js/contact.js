@@ -1,16 +1,6 @@
 
 angular.module('audio-samples.contact', ['ngRoute'])
 
-.config(['$routeProvider', '$locationProvider',
-	function($routeProvider, $locationProvider) {
-		$routeProvider.when('/contact', {
-			templateUrl: 'contact/contact.html',
-			controller: 'Contact'
-		});
-		$locationProvider.html5Mode(true);
-	}
-])
-
 .controller('Contact', function($scope, $http) {
 	
 	$scope.formData = {};
@@ -33,7 +23,7 @@ angular.module('audio-samples.contact', ['ngRoute'])
 	$scope.submitForm = function() {
 		$http({
 			method : 'POST',
-			url : 'contact/contact.php',
+			url : 'js/contact.js.php',
 			data : param($scope.formData), // pass in data as strings
 			// Set the headers so angular passing info as form data (not request payload).
 			headers : { 'Content-Type': 'application/x-www-form-urlencoded' } 
