@@ -15,6 +15,7 @@ body, p, h2 {
 }
 
 h1, h3, h4, h5, h6, ol, footer, 
+.page-title,
 .arrow,
 .search button,
 .contact input[type=submit] {
@@ -25,6 +26,12 @@ h1 {
 	letter-spacing: -1.5px;
 	line-height: 1;
 	font-size: 48px;
+}
+
+.page-title {
+    font-size: 42px;
+    color: #57585A;
+    padding-top: 40px;
 }
 
 h2, ol {

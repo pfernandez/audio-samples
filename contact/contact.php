@@ -26,14 +26,13 @@ if ( ! empty($errors)) {
   $data['messageSuccess'] = 'Thanks. Your message was submitted successfully.';
   
   // CHANGE THE TWO LINES BELOW
-  $email_to = "paul4nandez@gmail.com";
+  $email_to = "hello@artsdigital.co";
   $email_subject = "Sounds Right Here Contact Form Message";
   
   $name = $_POST['name']; // required
   $email_from = $_POST['email']; // required
   $message = $_POST['message']; // required
   
-  $email_message = "Form details below" . "\n\n";
   $email_message .= "Name: " . $name . "\n";
   $email_message .= "Email: " . $email_from . "\n";
   $email_message .= "Message: " . $message . "\n";
@@ -42,7 +41,7 @@ if ( ! empty($errors)) {
   	'Reply-To: ' . $email_from . "\r\n" .
   	'X-Mailer: PHP/' . phpversion();
   
-  @mail($email_to, $email_subject, $email_message, $headers);
+  mail($email_to, $email_subject, $email_message, $headers);
 }
 
 // Return all our data to an AJAX call.

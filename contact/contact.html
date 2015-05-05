@@ -1,6 +1,8 @@
 <form name="contactForm" class="contact container" novalidate 
 	ng-submit="contactForm.$valid && submitForm()">
 
+    <h2 class="page-title">Contact Us</h2>
+
 	<label for="name">Name</label>
 	<input type="text" name="name" ng-model="formData.name" ng-class="{'error' : errorName}">
 	
