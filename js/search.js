@@ -6,14 +6,15 @@ var soundSearch = angular.module('audio-samples.search', [])
 	'Search',
 	['$scope', '$http', '$templateCache', 'ngAudio', '$location',
 	function($scope, $http, $templateCache, ngAudio, $location) {
-
+		
+		$scope.data = {};
+		$scope.resultsPerPage = 15;
+		$scope.fetched = false;
+		
 		// Init function will be run whenever the page loads or the url changes.
 		$scope.init = function () {
 			$http.defaults.headers.common.Authorization = 
 					'Token 9b72591754173d4d8baecbfb4f410c7bad47c138';
-			$scope.data = {},
-			$scope.resultsPerPage = 15;
-			$scope.fetched = false;
 		
 			// If there's a query string present in the url, act on it.
 			var query = $location.search();
