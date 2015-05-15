@@ -2,7 +2,6 @@
 
 angular.module('audio-samples', [
 	'ngRoute',
-	'ngAudio',
 	'angular-loading-bar',
 	'ngAnimate',
 	'audio-samples.search',

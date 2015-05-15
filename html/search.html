@@ -20,13 +20,13 @@
 			vol3: (sound.audio.volume > 0.667),
 			vol4: (sound.audio.volume == 1)}">
 			<button ng-click="play()" class="pause-play paused"
-				ng-class="{paused: isPaused(sound)}">Play/Pause</button>
-			<input type="range" min="0" max="1" step="0.01" class="progress"
-				ng-model="sound.audio.progress">
-			<span class="time">{{sound.audio.remaining | asMinutes}}</span>
+				ng-class="{paused: sound.audio.paused}">Play/Pause</button>
+			<input type="range" min="0" max="{{sound.audio.duration}}" step="0.01" class="progress"
+				ng-model="sound.currentTime" ng-model-options="{ getterSetter: true }">
+			<span class="time">{{sound.remaining()}}</span>
 			<span class="volume-icon"></span>
 			<input type=range min=0 max=1 step=0.01 class="volume"
-				ng-model="sound.audio.volume">
+				ng-model="sound.volume" ng-model-options="{ getterSetter: true }">
 			</input>
 		</div>
 

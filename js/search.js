@@ -4,8 +4,8 @@ var soundSearch = angular.module('audio-samples.search', [])
 
 .controller(
 	'Search',
-	['$scope', '$http', '$templateCache', 'ngAudio', '$location',
-	function($scope, $http, $templateCache, ngAudio, $location) {
+	['$scope', '$http', '$templateCache', '$location',
+	function($scope, $http, $templateCache, $location) {
 		
 		$scope.data = {};
 		$scope.resultsPerPage = 15;
@@ -47,15 +47,63 @@ var soundSearch = angular.module('audio-samples.search', [])
 					prevPage = (prevUrl ? getQueryVar(prevUrl, 'page') : 0);
 				response.start = $scope.resultsPerPage * prevPage + 1;
 				response.thisPage = prevPage + 1;
-			
-				// Set default player values.
+				
+				// Test for mp3/ogg browser compatibility and load the sound.
+				var test = document.createElement('audio'),
+					fileType = null;
+				if(test.canPlayType) {
+					if(test.canPlayType('audio/ogg; codecs="vorbis"')) {
+						fileType = 'ogg';
+					} else if(test.canPlayType('audio/mpeg')) {
+						fileType = 'mp3';
+					}
+				} else {
+					alert("Sorry, your web browser doesn't support HTML audio");
+				}
+				
+				// Create an audio element for each sound and attach them to our model.
 				response.results.map(function(sound) {
-					sound.audio = {progress: 0, volume: 1};
+				
+					// TODO: Time to start being more angular and move this stuff to a directive.
+					// http://stackoverflow.com/questions/12874797/how-to-register-my-own-event-listeners-in-angularjs
+					angular.extend(sound, {
+						audio: new Audio(),
+						volume: function(value) { 
+							if(value) {
+								this.audio.volume = value;
+							} else {
+								return this.audio.volume;
+							}
+						},
+						currentTime: function(value) { 
+							if(value) {
+								this.audio.currentTime = value;
+							} else {
+								return this.audio.currentTime;
+							}
+						},
+						remaining: function() { 
+							var time = this.audio.duration - this.audio.currentTime || 0,
+							minutes = Math.floor(time / 60),  
+							seconds = Math.floor(time - minutes * 60);
+							return minutes + ':' + (seconds > 9 ? seconds : '0' + seconds);
+						}
+					});
+					
+					sound.audio.onloadedmetadata = sound.audio.ontimeupdate = function() {
+						$scope.$apply();
+					};
+				
+					if('ogg' == fileType) {
+						sound.audio.src = sound.previews['preview-lq-ogg'];
+					}
+					else if('mp3' == fileType) {
+						sound.audio.src = sound.previews['preview-lq-mp3'];
+					}
 				});
 			
 				// Set the results as our currently displayed data.
 				$scope.data = response;
-			
 				$scope.fetched = true;
 				
 			}).error(function(response, status) {
@@ -75,37 +123,14 @@ var soundSearch = angular.module('audio-samples.search', [])
 		};
 	
 		$scope.play = function() {
-			var sound = this.sound;
-			if(! isLoaded(sound)) {
-				// Test for mp3/ogg browser compatibility and load the sound.
-				var el = document.createElement('audio');
-				if(el.canPlayType) {
-					var source;
-					if(el.canPlayType('audio/ogg; codecs="vorbis"')) {
-						source = sound.previews['preview-lq-ogg'];
-					} else if(el.canPlayType('audio/mpeg')) {
-						source = sound.previews['preview-lq-mp3'];
-					}
-					if(source) {
-						sound.audio = ngAudio.load(source);
-						sound.audio.paused = true;
-					}
-				}
-				if(!sound.audio) {
-					alert("Sorry, your web browser doesn't support HTML audio");
-				}
-			}
-			var audio = sound.audio;
-			audio.paused ? audio.play() : audio.pause();
+			var el = this.sound.audio;
+			el.paused ? el.play() : el.pause();
 		};
-	
-		$scope.isPaused = function(sound) {
-			if( !isLoaded(sound) || sound.audio.paused ) {
-				return true;
-			} else {
-				return false;
-			}
-		};
+		
+		$scope.volume = function(value) {
+		console.log(value);
+			this.sound.audio.volume = value;
+		}
 	
 		$scope.navNumbers = function() {
 	
@@ -151,15 +176,10 @@ var soundSearch = angular.module('audio-samples.search', [])
 		//////////////////////////////////////////////////////////////////////////
 		// "Private" functions
 	
-		// Boolean indicating whether a sound is currently loaded into memory.
-		var isLoaded = function(sound) {
-			return !!(sound.audio && sound.audio.id);
-		};
-	
 		// Pause any currently playing sounds.
 		var pauseAll = function () {
 			($scope.data.results || []).map(function(sound) {
-				if(isLoaded(sound)) { sound.audio.pause() }
+				sound.audio.pause();
 			});
 		};
 		
@@ -195,15 +215,6 @@ var soundSearch = angular.module('audio-samples.search', [])
 .filter('numberWithCommas', function() {
 	return function(number) {
 		return insertCommas(number);
-	}
-})
-
-.filter('asMinutes', function() {
-	return function(time) {
-		var time = time || 0,
-			minutes = Math.floor(time / 60),  
-			seconds = Math.floor(time - minutes * 60);
-		return minutes + ':' + (seconds > 9 ? seconds : '0' + seconds);
 	}
 })
 
