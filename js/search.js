@@ -28,7 +28,7 @@ var soundSearch = angular.module('audio-samples.search', [])
 			
 				// Execute the search with parameters from the query string. For now this is just a call to 
 				// the Freesound API but hopefully that can be expanded later.
-				$scope.fetch('https://www.freesound.org/apiv2/search/text/'
+				$scope.fetch('http://crossorigin.me/https://www.freesound.org/apiv2/search/text/'
 					+ '?query=' + encodeURIComponent(query.text)
 					+ '&page=' + encodeURIComponent(query.page)
 					+ '&fields=name,url,previews,tags,username');
